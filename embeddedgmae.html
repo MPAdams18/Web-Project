@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Guessing Game</title>
+    <style>
+        /* Styling for the entire page */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        h1 {
+            color: #4caf50;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            width: 60%;
+            font-size: 18px;
+            margin: 15px 0;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .message {
+            margin: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            transition: opacity 0.5s;
+        }
+
+        .correct {
+            color: green;
+            opacity: 1;
+        }
+
+        .incorrect {
+            color: red;
+            opacity: 1;
+        }
+
+        .hint {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #ff9800;
+        }
+
+        .score {
+            font-size: 16px;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        .difficulty {
+            margin-top: 20px;
+        }
+
+        .difficulty label {
+            margin: 5px 15px;
+            font-size: 16px;
+        }
+
+        .difficulty input {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Number Guessing Game</h1>
+        <p>Guess the number between 1 and <span id="range">100</span></p>
+        
+        <input type="number" id="guess" placeholder="Enter your guess" />
+        <button onclick="checkGuess()">Guess</button>
+
+        <div id="message" class="message"></div>
+        <div id="hint" class="hint"></div>
+        <div id="score" class="score"></div>
+
+        <div class="difficulty">
+            <label for="easy">Easy</label>
+            <input type="radio" id="easy" name="difficulty" value="100" checked onchange="setDifficulty()">
+            <label for="medium">Medium</label>
+            <input type="radio" id="medium" name="difficulty" value="500" onchange="setDifficulty()">
+            <label for="hard">Hard</label>
+            <input type="radio" id="hard" name="difficulty" value="1000" onchange="setDifficulty()">
+        </div>
+    </div>
+
+    <script>
+        let randomNumber = 0;
+        let score = 0;
+        let range = 100;
+
+        // Function to initialize or reset the game
+        function initGame() {
+            randomNumber = Math.floor(Math.random() * range) + 1;
+            score = 0;
+            document.getElementById("score").textContent = `Attempts: ${score}`;
+            document.getElementById("message").textContent = '';
+            document.getElementById("hint").textContent = '';
+            document.getElementById("guess").value = '';
+        }
+
+        // Function to check the player's guess
+        function checkGuess() {
+            const guess = parseInt(document.getElementById("guess").value);
+            const messageElement = document.getElementById("message");
+            const hintElement = document.getElementById("hint");
+
+            if (isNaN(guess)) {
+                messageElement.textContent = "Please enter a valid number!";
+                messageElement.className = "message incorrect";
+                return;
+            }
+
+            score++;
+            document.getElementById("score").textContent = `Attempts: ${score}`;
+
+            // Check if the guess is correct
+            if (guess === randomNumber) {
+                messageElement.textContent = "Congratulations! You guessed the correct number!";
+                messageElement.className = "message correct";
+                hintElement.textContent = '';
+                setTimeout(initGame, 2000); // Reset game after 2 seconds
+            } else {
+                messageElement.textContent = `Incorrect guess! Try again.`;
+                messageElement.className = "message incorrect";
+                giveHint(guess);
+            }
+        }
+
+        // Function to give a hint based on the guess
+        function giveHint(guess) {
+            const difference = Math.abs(randomNumber - guess);
+            const hintElement = document.getElementById("hint");
+
+            if (difference <= 5) {
+                hintElement.textContent = "Hot! You're very close!";
+            } else if (difference <= 15) {
+                hintElement.textContent = "Warm. You're getting closer!";
+            } else {
+                hintElement.textContent = "Cold. Try a much different number.";
+            }
+        }
+
+        // Set the difficulty level and update the range
+        function setDifficulty() {
+            const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+            range = parseInt(difficulty);
+            document.getElementById("range").textContent = range;
+            initGame(); // Restart the game with the new difficulty range
+        }
+
+        // Initialize the game when the page loads
+        window.onload = initGame;
+    </script>
+
+</body>
+</html>
